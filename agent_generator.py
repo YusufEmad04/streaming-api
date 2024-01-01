@@ -40,8 +40,7 @@ async def run_agent(agent, query):
     task = asyncio.create_task(run_call(agent, query, handler))
     # print("sent query")
     async for token in handler.aiter():
-        # print("from iter")
-        # print(token)
+        
         yield token
 
     await task
