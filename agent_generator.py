@@ -42,5 +42,6 @@ async def run_agent(agent, query):
     async for token in handler.aiter():
         
         yield token
+        print(token)
 
     await task

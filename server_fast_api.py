@@ -27,6 +27,7 @@ async def generate_data_async():
 async def stream_response(data: dict):
     question = data["question"]
     session_id = data["session_id"]
+    print("question:", question)
 
     agent = get_agent(Agent.TEST, session_id, streaming=True)
 

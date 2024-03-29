@@ -3,7 +3,8 @@ import os
 from langchain.agents import load_tools, Tool
 from langchain.tools import StructuredTool
 import requests
-from pydantic import BaseModel, Field
+# from pydantic import BaseModel, Field
+from langchain.pydantic_v1 import BaseModel, Field
 from langchain.vectorstores.base import VectorStoreRetriever, VectorStore
 from enum import Enum
 
@@ -175,6 +176,14 @@ def _get_dummy_products_tool():
         args_schema=SingleInputToolSchema,
     )
 
+def _get_retriever_parent_document(retriever, name, description, metadata=None, custom_instruction=None):
+    retriever = docs_to_text_retriever(retriever.get_relevant_documents, custom_instruction)
+    return StructuredTool(
+        name=name,
+        description=description,
+        func=retriever,
+        args_schema=SingleInputToolSchema,
+    )
 
 class AgentTool(str, Enum):
     CALCULATOR = "calculator"
@@ -185,6 +194,7 @@ class AgentTool(str, Enum):
     PRODUCTS = "products"
     SEND_QUESTION = "send_question"
     MAKE_A_BOOKING = "make_a_booking"
+    PARENT_DOCUMENT = "parent_document"
 
 tool_dict = {
     AgentTool.CALCULATOR: _get_llm_math,
@@ -195,6 +205,7 @@ tool_dict = {
     AgentTool.PRODUCTS: _get_dummy_products_tool,
     AgentTool.SEND_QUESTION: _get_telegram_tool,
     AgentTool.MAKE_A_BOOKING: _get_make_a_booking_tool,
+    AgentTool.PARENT_DOCUMENT: _get_retriever_parent_document,
 }
 
 def get_tool(tool_name):

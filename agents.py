@@ -11,28 +11,26 @@ from langchain.agents.openai_functions_agent.agent_token_buffer_memory import Ag
 from tools import AgentTool
 
 def _init_test_agent(session_id, streaming=False):
-    llm_chat = ChatOpenAI(temperature=0.2, model="gpt-3.5-turbo-16k-0613", streaming=streaming)
+    llm_chat = ChatOpenAI(temperature=0.2, model="gpt-3.5-turbo", streaming=streaming)
     tools = [
-        get_tool("retriever")(
-            syllabus_vectorstore(),
+        get_tool(AgentTool.PARENT_DOCUMENT)(
+            syllabus_vectorstore_parent(),
             name="syllabus_database",
-            description="retrieve manufacturing technology syllabus data"
-        ),
-        # get_tool(AgentTool.TELEGRAM)(
-        #     description="used to send a message to the teacher in case the user wanted a human to answer him."
-        # )
+            description="Use this tool whenever the user asks any question."
+        )
     ]
 
     sys_message = SystemMessage(
-        content="You are a manufacturing technology teacher. You help students in their questions about the syllabus.\n"
-                "You always lookup question in the syllabus_database with the same user question.\n"
+        content="You are a creativity and innovation teacher. You help students in their questions about the syllabus.\n"
+                "You always lookup question in the syllabus_database with the same user question.\n\nDon't mention that you are using a database."
                 "You NEVER answer questions outside the syllabus, and never come up with answers.\n"
                 "You always try to refer to the syllabus and in which lesson or topic the answer is if you can.\n"
                 "Query the syllabus_database with the exact user message without any modifications.\n"
+                "Always refer to the syllabus_database even if you know the answer.\n"
                 "Be helpful and always willing to answer more and more questions.\n"
                 "Make your answers in bullet points whenever possible, don't make the answer too long, try to make it as short as possible.\n"
                 "Try to make your response short without losing information. (Answer Around 50 WORDS MAXIMUM)\n"
-                "Begin the conversation with offering help in manufacturing technology questions.\n"
+                "Begin the conversation with offering help in creativity and innovation questions."
 
     )
 
